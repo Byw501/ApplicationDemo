@@ -27,15 +27,15 @@ public class CameraMovement : MonoBehaviour
         viewArraryPos[2] = leftView;
 
         viewArraryRot = new Vector3[3];
-        viewArraryPos[0] = normalViewRot;
-        viewArraryPos[1] = frontViewRot;
-        viewArraryPos[2] = leftViewRot;
+        viewArraryRot[0] = normalViewRot;
+        viewArraryRot[1] = frontViewRot;
+        viewArraryRot[2] = leftViewRot;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             rotateCounter++;
             int index = rotateCounter % 3;
