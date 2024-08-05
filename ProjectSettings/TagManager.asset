@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Unbreakable
+  - Breakable
   layers:
   - Default
   - TransparentFX

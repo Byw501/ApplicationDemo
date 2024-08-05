@@ -5,12 +5,14 @@ using UnityEngine;
 public class MovementControl : MonoBehaviour
 {
     public float cubeSpeed;
+    public GameObject blocker;
     private bool isMove = false;
     private Vector3 direction = Vector3.zero;
+    private GameObject checkpoint;
     // Start is called before the first frame update
     void Start()
     {
-        
+        checkpoint = GameObject.Find("Checkpoint");
     }
 
     // Update is called once per frame
@@ -38,6 +40,16 @@ public class MovementControl : MonoBehaviour
                 isMove = true;
                 direction = Vector3.back;
             }
+            else if (Input.GetKeyDown(KeyCode.Q))
+            {
+                isMove = true;
+                direction = Vector3.up;
+            }
+            else if (Input.GetKeyDown(KeyCode.E))
+            {
+                isMove = true;
+                direction = Vector3.down;
+            }
         }
 
         if (isMove)
@@ -50,9 +62,26 @@ public class MovementControl : MonoBehaviour
     {
         if(collision.gameObject.tag == "Unbreakable")
         {
-            isMove = false;
-            transform.Translate(-direction * 0.1f);
+            StopMotion();
         }
+        else if(collision.gameObject.tag == "Breakable")
+        {
+            StopMotion();
+            Destroy(collision.gameObject);
+            SpawnBlock();
+        }
+    }
+
+    private void StopMotion()
+    {
+        isMove = false;
+        transform.Translate(-direction * 0.1f);
+    }
+
+    private void SpawnBlock()
+    {
+        Vector3 pos = checkpoint.transform.position - new Vector3(0f, 1f, 0f);
+        Instantiate(blocker, pos, Quaternion.identity);
     }
 
 }
