@@ -7,9 +7,11 @@ public class MovementControl : MonoBehaviour
     public float cubeSpeed;
     public GameObject blocker;
     public Vector3 sizeMax;
+    public GameObject[] spawnBlockList;
     private bool isMove = false;
     private Vector3 direction = Vector3.zero;
     private GameObject checkpoint;
+    private int spawnCounter = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -128,8 +130,12 @@ public class MovementControl : MonoBehaviour
 
     private void SpawnBlock()
     {
-        Vector3 pos = checkpoint.transform.position - new Vector3(0f, 1f, 0f);
-        Instantiate(blocker, pos, Quaternion.identity);
+        if(spawnCounter < spawnBlockList.Length)
+        {
+            spawnBlockList[spawnCounter].SetActive(true);
+            spawnCounter++;
+        }
+        
     }
 
 }
