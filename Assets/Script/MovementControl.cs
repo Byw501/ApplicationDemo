@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MovementControl : MonoBehaviour
 {
@@ -8,15 +9,19 @@ public class MovementControl : MonoBehaviour
     public GameObject blocker;
     public Vector3 sizeMax;
     public GameObject[] spawnBlockList;
+    public int levelNum;
     private bool isMove = false;
     private Vector3 direction = Vector3.zero;
     private GameObject checkpoint;
     private int spawnCounter = 0;
+    //private int levelNum;
+
     // Start is called before the first frame update
     void Start()
     {
         checkpoint = GameObject.Find("Checkpoint");
         sizeMax -= Vector3.one;
+        //levelNum = PlayerPrefs.GetInt("levelNum", 1);
     }
 
     // Update is called once per frame
@@ -100,7 +105,7 @@ public class MovementControl : MonoBehaviour
         }
         else if(collision.gameObject.tag == "Breakable")
         {
-            StopMotion();
+            //StopMotion();
             Destroy(collision.gameObject);
             SpawnBlock();
         }
@@ -136,6 +141,13 @@ public class MovementControl : MonoBehaviour
             spawnCounter++;
         }
         
+    }
+
+    public void Checkpoint()
+    {
+        levelNum++;
+        //PlayerPrefs.SetInt("levelNum", levelNum);
+        SceneManager.LoadScene("level" + levelNum.ToString());
     }
 
 }

@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
+    public float m_stayTime;
+    private float m_stayTimer = 0f;
+    private GameObject m_player;
     // Start is called before the first frame update
     void Start()
     {
-        
+        m_player = GameObject.Find("Cube");
     }
 
     // Update is called once per frame
@@ -17,11 +20,17 @@ public class Checkpoint : MonoBehaviour
     }
 
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if(other.gameObject.tag == "Player")
+        m_stayTimer += Time.deltaTime;
+        if(other.gameObject.tag == "Player" && m_stayTimer >= m_stayTime)
         {
-            Debug.Log("You won");
+            m_player.GetComponent<MovementControl>().Checkpoint();
         }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        m_stayTimer = 0f;
     }
 }
