@@ -105,9 +105,14 @@ public class MovementControl : MonoBehaviour
         }
         else if(collision.gameObject.tag == "Breakable")
         {
-            //StopMotion();
+            StopMotion();
             Destroy(collision.gameObject);
             SpawnBlock();
+        }
+        else if (collision.gameObject.tag == "Slide")
+        {
+            StopMotion();
+            
         }
     }
 
