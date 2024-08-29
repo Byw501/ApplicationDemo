@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Unbreakable
   - Breakable
+  - Slide
   layers:
   - Default
   - TransparentFX

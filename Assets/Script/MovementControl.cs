@@ -11,9 +11,12 @@ public class MovementControl : MonoBehaviour
     public GameObject[] spawnBlockList;
     public int levelNum;
     private bool isMove = false;
-    private Vector3 direction = Vector3.zero;
+    private bool isBlockMove = false;
+    private Vector3 m_direction = Vector3.zero;
+    private Vector3 m_blockDirect = Vector3.zero;
     private GameObject checkpoint;
     private int spawnCounter = 0;
+    private Transform m_blockTransform;
     //private int levelNum;
 
     // Start is called before the first frame update
@@ -29,90 +32,116 @@ public class MovementControl : MonoBehaviour
     {
         if (!isMove)
         {
-            if (Input.GetAxis("Horizontal") > 0f)
-            {
-                isMove = true;
-                direction = Vector3.right;
-            }
-            else if (Input.GetAxis("Horizontal") < 0f)
-            {
-                isMove = true;
-                direction = Vector3.left;
-            }
-            else if(Input.GetAxis("Vertical") > 0f)
-            {
-                isMove = true;
-                direction = Vector3.forward;
-            }
-            else if (Input.GetAxis("Vertical") < 0f)
-            {
-                isMove = true;
-                direction = Vector3.back;
-            }
-            else if (Input.GetKeyDown(KeyCode.Q))
-            {
-                isMove = true;
-                direction = Vector3.up;
-            }
-            else if (Input.GetKeyDown(KeyCode.E))
-            {
-                isMove = true;
-                direction = Vector3.down;
-            }
+            GetInputAxis();
         }
 
         if (isMove)
         {
-            transform.position += direction * cubeSpeed * Time.deltaTime;
-            if(transform.position.x > sizeMax.x)
-            {
-                transform.position = new Vector3(sizeMax.x,transform.position.y, transform.position.z);
-                StopMotion();
-            }
-            if (transform.position.x < 0f)
-            {
-                transform.position = new Vector3(0f, transform.position.y, transform.position.z);
-                StopMotion();
-            }
-            if (transform.position.y > sizeMax.y)
-            {
-                transform.position = new Vector3(transform.position.x, sizeMax.y, transform.position.z);
-                StopMotion();
-            }
-            if (transform.position.y < 0f)
-            {
-                transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
-                StopMotion();
-            }
-            if (transform.position.z > sizeMax.z)
-            {
-                transform.position = new Vector3(transform.position.x, transform.position.y, sizeMax.z);
-                StopMotion();
-            }
-            if (transform.position.z < 0f)
-            {
-                transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
-                StopMotion();
-            }
+            Move(transform, m_direction, ref isMove);
         }
+
+        if (isBlockMove)
+        {
+            Move(m_blockTransform, m_blockDirect, ref isBlockMove);
+        }
+    }
+
+    private void GetInputAxis()
+    {
+        if (Input.GetAxis("Horizontal") > 0f)
+        {
+            isMove = true;
+            m_direction = Vector3.right;
+        }
+        else if (Input.GetAxis("Horizontal") < 0f)
+        {
+            isMove = true;
+            m_direction = Vector3.left;
+        }
+        else if (Input.GetAxis("Vertical") > 0f)
+        {
+            isMove = true;
+            m_direction = Vector3.forward;
+        }
+        else if (Input.GetAxis("Vertical") < 0f)
+        {
+            isMove = true;
+            m_direction = Vector3.back;
+        }
+        else if (Input.GetKeyDown(KeyCode.Q))
+        {
+            isMove = true;
+            m_direction = Vector3.up;
+        }
+        else if (Input.GetKeyDown(KeyCode.E))
+        {
+            isMove = true;
+            m_direction = Vector3.down;
+        }
+    }
+
+    private void Move(Transform localTransform, Vector3 direct, ref bool moveCheck)
+    {
+        localTransform.position += direct * cubeSpeed * Time.deltaTime;
+        if (localTransform.position.x > sizeMax.x)
+        {
+            localTransform.position = new Vector3(sizeMax.x, localTransform.position.y, localTransform.position.z);
+            StopMotion(transform, ref moveCheck);
+        }
+        if (localTransform.position.x < 0f)
+        {
+            localTransform.position = new Vector3(0f, localTransform.position.y, localTransform.position.z);
+            StopMotion(transform, ref moveCheck);
+        }
+        if (localTransform.position.y > sizeMax.y)
+        {
+            localTransform.position = new Vector3(localTransform.position.x, sizeMax.y, localTransform.position.z);
+            StopMotion(transform, ref moveCheck);
+        }
+        if (localTransform.position.y < 0f)
+        {
+            localTransform.position = new Vector3(localTransform.position.x, 0f, localTransform.position.z);
+            StopMotion(transform, ref moveCheck);
+        }
+        if (localTransform.position.z > sizeMax.z)
+        {
+            localTransform.position = new Vector3(localTransform.position.x, localTransform.position.y, sizeMax.z);
+            StopMotion(transform, ref moveCheck);
+        }
+        if (localTransform.position.z < 0f)
+        {
+            localTransform.position = new Vector3(localTransform.position.x, localTransform.position.y, 0f);
+            StopMotion(transform, ref moveCheck);
+        }
+    }
+
+    private void PushBlock(Transform localTransform)
+    {
+        if (!isBlockMove)
+        {
+            m_blockDirect = m_direction;
+            isBlockMove = true;
+            m_blockTransform = localTransform;
+        }
+        
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.tag == "Unbreakable")
         {
-            StopMotion();
+            StopMotion(transform, ref isMove);
         }
         else if(collision.gameObject.tag == "Breakable")
         {
-            StopMotion();
+            StopMotion(transform, ref isMove);
             Destroy(collision.gameObject);
             SpawnBlock();
         }
         else if (collision.gameObject.tag == "Slide")
         {
-            StopMotion();
-            
+            PushBlock(collision.transform);
+            StopMotion(transform, ref isMove);
         }
     }
 
@@ -120,22 +149,49 @@ public class MovementControl : MonoBehaviour
     {
         if (collision.gameObject.tag == "Unbreakable")
         {
-            StopMotion();
+            StopMotion(transform, ref isMove);
         }
         else if (collision.gameObject.tag == "Breakable")
         {
-            StopMotion();
+            StopMotion(transform, ref isMove);
             Destroy(collision.gameObject);
             SpawnBlock();
         }
+        else if(collision.gameObject.tag == "Slide")
+        {
+            PushBlock(collision.transform);
+            StopMotion(transform, ref isMove);
+        }
     }
 
-    private void StopMotion()
+    private void StopMotion(Transform localTransform, ref bool moveCheck)
     {
-        isMove = false;
-        Vector3 pos = transform.position;
+        if(localTransform.gameObject.tag == "Slide")
+        {
+            StopBlockMotion(localTransform,ref moveCheck);
+        }
+        else
+        {
+            StopPlayerMotion(localTransform, ref moveCheck);
+        }
+    }
+
+    private void StopPlayerMotion(Transform localTransform, ref bool moveCheck)
+    {
+        moveCheck = false;
+        Vector3 pos = localTransform.position;
         pos = new Vector3(Mathf.Round(pos.x), Mathf.Round(pos.y), Mathf.Round(pos.z));
-        transform.position = pos;
+        localTransform.position = pos;
+        m_direction = Vector3.zero;
+    }
+
+    private void StopBlockMotion(Transform localTransform, ref bool moveCheck)
+    {
+        moveCheck = false;
+        Vector3 pos = localTransform.position;
+        pos = new Vector3(Mathf.Round(pos.x), Mathf.Round(pos.y), Mathf.Round(pos.z));
+        localTransform.position = pos;
+        m_blockDirect = Vector3.zero;
     }
 
     private void SpawnBlock()
