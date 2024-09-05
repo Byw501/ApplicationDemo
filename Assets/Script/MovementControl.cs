@@ -50,6 +50,7 @@ public class MovementControl : MonoBehaviour
     {
         if (Input.GetAxis("Horizontal") > 0f)
         {
+            Debug.Log(Input.GetAxis("Horizontal"));
             isMove = true;
             m_direction = Vector3.right;
         }
@@ -60,6 +61,7 @@ public class MovementControl : MonoBehaviour
         }
         else if (Input.GetAxis("Vertical") > 0f)
         {
+            Debug.Log(Input.GetAxis("Vertical"));
             isMove = true;
             m_direction = Vector3.forward;
         }
@@ -86,32 +88,32 @@ public class MovementControl : MonoBehaviour
         if (localTransform.position.x > sizeMax.x)
         {
             localTransform.position = new Vector3(sizeMax.x, localTransform.position.y, localTransform.position.z);
-            StopMotion(transform, ref moveCheck);
+            StopMotion(localTransform, ref moveCheck);
         }
         if (localTransform.position.x < 0f)
         {
             localTransform.position = new Vector3(0f, localTransform.position.y, localTransform.position.z);
-            StopMotion(transform, ref moveCheck);
+            StopMotion(localTransform, ref moveCheck);
         }
         if (localTransform.position.y > sizeMax.y)
         {
             localTransform.position = new Vector3(localTransform.position.x, sizeMax.y, localTransform.position.z);
-            StopMotion(transform, ref moveCheck);
+            StopMotion(localTransform, ref moveCheck);
         }
         if (localTransform.position.y < 0f)
         {
             localTransform.position = new Vector3(localTransform.position.x, 0f, localTransform.position.z);
-            StopMotion(transform, ref moveCheck);
+            StopMotion(localTransform, ref moveCheck);
         }
         if (localTransform.position.z > sizeMax.z)
         {
             localTransform.position = new Vector3(localTransform.position.x, localTransform.position.y, sizeMax.z);
-            StopMotion(transform, ref moveCheck);
+            StopMotion(localTransform, ref moveCheck);
         }
         if (localTransform.position.z < 0f)
         {
             localTransform.position = new Vector3(localTransform.position.x, localTransform.position.y, 0f);
-            StopMotion(transform, ref moveCheck);
+            StopMotion(localTransform, ref moveCheck);
         }
     }
 
@@ -122,6 +124,8 @@ public class MovementControl : MonoBehaviour
             m_blockDirect = m_direction;
             isBlockMove = true;
             m_blockTransform = localTransform;
+
+            StopPlayerMotion(transform, ref isMove);
         }
         
     }
