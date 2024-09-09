@@ -39,18 +39,12 @@ public class MovementControl : MonoBehaviour
         {
             Move(transform, m_direction, ref isMove);
         }
-
-        if (isBlockMove)
-        {
-            Move(m_blockTransform, m_blockDirect, ref isBlockMove);
-        }
     }
 
     private void GetInputAxis()
     {
         if (Input.GetAxis("Horizontal") > 0f)
         {
-            Debug.Log(Input.GetAxis("Horizontal"));
             isMove = true;
             m_direction = Vector3.right;
         }
@@ -61,7 +55,6 @@ public class MovementControl : MonoBehaviour
         }
         else if (Input.GetAxis("Vertical") > 0f)
         {
-            Debug.Log(Input.GetAxis("Vertical"));
             isMove = true;
             m_direction = Vector3.forward;
         }
@@ -88,55 +81,49 @@ public class MovementControl : MonoBehaviour
         if (localTransform.position.x > sizeMax.x)
         {
             localTransform.position = new Vector3(sizeMax.x, localTransform.position.y, localTransform.position.z);
-            StopMotion(localTransform, ref moveCheck);
+            StopMotion(transform, ref moveCheck);
         }
         if (localTransform.position.x < 0f)
         {
             localTransform.position = new Vector3(0f, localTransform.position.y, localTransform.position.z);
-            StopMotion(localTransform, ref moveCheck);
+            StopMotion(transform, ref moveCheck);
         }
         if (localTransform.position.y > sizeMax.y)
         {
             localTransform.position = new Vector3(localTransform.position.x, sizeMax.y, localTransform.position.z);
-            StopMotion(localTransform, ref moveCheck);
+            StopMotion(transform, ref moveCheck);
         }
         if (localTransform.position.y < 0f)
         {
             localTransform.position = new Vector3(localTransform.position.x, 0f, localTransform.position.z);
-            StopMotion(localTransform, ref moveCheck);
+            StopMotion(transform, ref moveCheck);
         }
         if (localTransform.position.z > sizeMax.z)
         {
             localTransform.position = new Vector3(localTransform.position.x, localTransform.position.y, sizeMax.z);
-            StopMotion(localTransform, ref moveCheck);
+            StopMotion(transform, ref moveCheck);
         }
         if (localTransform.position.z < 0f)
         {
             localTransform.position = new Vector3(localTransform.position.x, localTransform.position.y, 0f);
-            StopMotion(localTransform, ref moveCheck);
+            StopMotion(transform, ref moveCheck);
         }
     }
 
-    private void PushBlock(Transform localTransform)
+    private void PushBlock(MovementControlBlock mcb)
     {
-        if (!isBlockMove)
-        {
-            m_blockDirect = m_direction;
-            isBlockMove = true;
-            m_blockTransform = localTransform;
+        mcb.m_direction = m_direction;
+        mcb.m_isMove = true;
 
-            StopPlayerMotion(transform, ref isMove);
-        }
-        
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag == "Unbreakable")
+        if (collision.gameObject.tag == "Unbreakable")
         {
             StopMotion(transform, ref isMove);
         }
-        else if(collision.gameObject.tag == "Breakable")
+        else if (collision.gameObject.tag == "Breakable")
         {
             StopMotion(transform, ref isMove);
             Destroy(collision.gameObject);
@@ -144,7 +131,8 @@ public class MovementControl : MonoBehaviour
         }
         else if (collision.gameObject.tag == "Slide")
         {
-            PushBlock(collision.transform);
+            MovementControlBlock mcb = collision.gameObject.GetComponent<MovementControlBlock>();
+            PushBlock(mcb);
             StopMotion(transform, ref isMove);
         }
     }
@@ -161,23 +149,17 @@ public class MovementControl : MonoBehaviour
             Destroy(collision.gameObject);
             SpawnBlock();
         }
-        else if(collision.gameObject.tag == "Slide")
+        else if (collision.gameObject.tag == "Slide")
         {
-            PushBlock(collision.transform);
+            MovementControlBlock mcb = collision.gameObject.GetComponent<MovementControlBlock>();
+            PushBlock(mcb);
             StopMotion(transform, ref isMove);
         }
     }
 
     private void StopMotion(Transform localTransform, ref bool moveCheck)
     {
-        if(localTransform.gameObject.tag == "Slide")
-        {
-            StopBlockMotion(localTransform,ref moveCheck);
-        }
-        else
-        {
-            StopPlayerMotion(localTransform, ref moveCheck);
-        }
+        StopPlayerMotion(localTransform, ref moveCheck);
     }
 
     private void StopPlayerMotion(Transform localTransform, ref bool moveCheck)
@@ -189,23 +171,14 @@ public class MovementControl : MonoBehaviour
         m_direction = Vector3.zero;
     }
 
-    private void StopBlockMotion(Transform localTransform, ref bool moveCheck)
+    public void SpawnBlock()
     {
-        moveCheck = false;
-        Vector3 pos = localTransform.position;
-        pos = new Vector3(Mathf.Round(pos.x), Mathf.Round(pos.y), Mathf.Round(pos.z));
-        localTransform.position = pos;
-        m_blockDirect = Vector3.zero;
-    }
-
-    private void SpawnBlock()
-    {
-        if(spawnCounter < spawnBlockList.Length)
+        if (spawnCounter < spawnBlockList.Length)
         {
             spawnBlockList[spawnCounter].SetActive(true);
             spawnCounter++;
         }
-        
+
     }
 
     public void Checkpoint()
