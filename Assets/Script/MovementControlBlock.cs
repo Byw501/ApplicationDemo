@@ -14,6 +14,7 @@ public class MovementControlBlock : MonoBehaviour
     void Start()
     {
         m_playerMovement = m_player.GetComponent<MovementControl>();
+        sizeMax = m_playerMovement.sizeMax;
         sizeMax -= Vector3.one;
     }
 

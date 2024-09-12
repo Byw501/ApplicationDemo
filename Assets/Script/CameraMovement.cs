@@ -8,8 +8,8 @@ public class CameraMovement : MonoBehaviour
     public float rotationSpeed = 3f;
     public Vector3 normalView;
     public Vector3 normalViewRot;
-    public Vector3 frontView;
-    public Vector3 frontViewRot;
+    public Vector3 topView;
+    public Vector3 topViewRot;
     public Vector3 leftView;
     public Vector3 leftViewRot;
 
@@ -23,13 +23,16 @@ public class CameraMovement : MonoBehaviour
     {
         viewArraryPos = new Vector3[3];
         viewArraryPos[0] = normalView;
-        viewArraryPos[1] = frontView;
+        viewArraryPos[1] = topView;
         viewArraryPos[2] = leftView;
 
         viewArraryRot = new Vector3[3];
         viewArraryRot[0] = normalViewRot;
-        viewArraryRot[1] = frontViewRot;
+        viewArraryRot[1] = topViewRot;
         viewArraryRot[2] = leftViewRot;
+
+        transform.position = viewArraryPos[0];
+        transform.localEulerAngles = viewArraryRot[0];
     }
 
     // Update is called once per frame
