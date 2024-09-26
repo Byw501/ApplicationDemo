@@ -5,7 +5,7 @@ using UnityEngine;
 public class MovementControlBlock : MonoBehaviour
 {
     public float cubeSpeed;
-    public Vector3 sizeMax;
+    private Vector3 sizeMax;
     public Vector3 m_direction;
     public GameObject m_player;
     public bool m_isMove = false;
@@ -13,9 +13,12 @@ public class MovementControlBlock : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if(m_player == null)
+        {
+            m_player = GameObject.Find("Cube");
+        }
         m_playerMovement = m_player.GetComponent<MovementControl>();
         sizeMax = m_playerMovement.sizeMax;
-        sizeMax -= Vector3.one;
     }
 
     // Update is called once per frame

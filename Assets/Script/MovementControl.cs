@@ -11,7 +11,6 @@ public class MovementControl : MonoBehaviour
     public GameObject[] spawnBlockList;
     public int levelNum;
     private bool isMove = false;
-    private bool isBlockMove = false;
     private Vector3 m_direction = Vector3.zero;
     private Vector3 m_blockDirect = Vector3.zero;
     private GameObject checkpoint;
